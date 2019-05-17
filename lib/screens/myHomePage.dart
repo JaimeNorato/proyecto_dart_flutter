@@ -10,41 +10,83 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: CustomGradientButton(
+          text: Text('Mexico'),
+          width: 150,
+          height: 40,
+          gradientColors: [Colors.green, Colors.white, Colors.red],
+          initialPosition: Alignment.centerLeft,
+          finalPosition: Alignment.centerRight,
+          function: () => debugPrint('Hola desde Colombia'),
+          leadingIcon: Icon(Icons.person),
+          finalIcon: Icon(Icons.chat),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomGradientButton extends StatelessWidget {
+  final Text text;
+  final double width;
+  final double height;
+  final List<Color> gradientColors;
+  final Alignment initialPosition;
+  final Alignment finalPosition;
+  final Function function;
+  final Icon leadingIcon;
+  final Icon finalIcon;
+
+  const CustomGradientButton(
+      {Key key,
+      @required this.text,
+      @required this.width,
+      @required this.height,
+      @required this.gradientColors,
+      @required this.initialPosition,
+      @required this.finalPosition,
+      @required this.function,
+      this.leadingIcon,
+      this.finalIcon})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-
-        title: Text(widget.title),
-      ),
-      body: CustomContainer(),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: _incrementCounter,
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-
-  Widget CustomContainer(){
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.all(16),
-      alignment: Alignment.center,
-      child: Text('Platzi'.toUpperCase()),
-      decoration: BoxDecoration(
-        color: Colors.purple,
-        border: Border.all(
-          color: Colors.teal,
-          width: 5,
+    return InkWell(
+      onTap: function,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(topRight: Radius.circular(height/2),topLeft: Radius.circular(height/2),bottomLeft: Radius.circular(height/2),bottomRight: Radius.circular(height/2)),
+            gradient: LinearGradient(
+                colors: gradientColors,
+                begin: initialPosition,
+                end: finalPosition),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black,
+                offset: Offset(2, -2),
+                blurRadius: height * .1,
+                spreadRadius: 1,
+              )
+            ]),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            leadingIcon ?? Container(),
+            text,
+            finalIcon ?? Offstage()
+          ],
         ),
       ),
-      transform: Matrix4.rotationZ(.05),
-      constraints: BoxConstraints(maxWidth: 100),
     );
   }
 }
