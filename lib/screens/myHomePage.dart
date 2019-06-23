@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:proycto_dart_flutter/src/api/api.dart';
+import 'package:proycto_dart_flutter/src/models/photos.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -10,24 +12,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final API api=API();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: CustomGradientButton(
-          text: Text('Mexico'),
-          width: 150,
-          height: 40,
-          gradientColors: [Colors.green, Colors.white, Colors.red],
-          initialPosition: Alignment.centerLeft,
-          finalPosition: Alignment.centerRight,
-          function: () => debugPrint('Hola desde Colombia'),
-          leadingIcon: Icon(Icons.person),
-          finalIcon: Icon(Icons.chat),
-        ),
+      body: FutureBuilder(
+        future: api.getPhotos(),
+        builder: (BuildContext context,AsyncSnapshot<List<Photos>> snapshot){
+          if(snapshot.hasData && snapshot.connectionState==ConnectionState.done){
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index){
+                  return Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 30,
+                        backgroundImage: NetworkImage(snapshot.data[index].thumbnailUrl),
+                      ),
+                      title: Text(snapshot.data[index].id.toString()),
+                      subtitle: Text("Descripcion del albun ${snapshot.data[index].id}"),
+                    ),
+                  );
+                }
+            );
+          }else{
+            return Center(child:CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
